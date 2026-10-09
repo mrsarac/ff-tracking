@@ -161,7 +161,7 @@ docs/          design spec, prompts and decisions, fframes contributions
   [Skia](https://skia.org), encoding with [FFmpeg](https://ffmpeg.org).
 - Font: [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) (SIL OFL 1.1, see
   [`licenses/JetBrainsMono-OFL.txt`](licenses/JetBrainsMono-OFL.txt)).
-- Made in one Claude Code session. Every prompt and decision is in [`docs/PROMPTS.md`](docs/PROMPTS.md),
+- Made with Claude Code. [`docs/PROMPT.md`](docs/PROMPT.md) is the prompt that makes this video,
   and the design is in [`docs/superpowers/specs/`](docs/superpowers/specs/2026-10-09-tracking-hud-design.md).
 
 ## License
