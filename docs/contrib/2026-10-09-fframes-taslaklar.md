@@ -1,6 +1,6 @@
 # fframes katkı taslakları (2026-10-09)
 
-Hedef: github.com/dmtrKovalenko/fframes, hesap @mrsarac. Durum: A gönderildi → https://github.com/dmtrKovalenko/fframes/issues/209 (2026-10-09). B gönderiliyor.
+Hedef: github.com/dmtrKovalenko/fframes, hesap @mrsarac. Durum: A gönderildi → https://github.com/dmtrKovalenko/fframes/issues/209 (2026-10-09). B gönderildi → https://github.com/dmtrKovalenko/fframes/issues/210. Repo public + MIT.
 Sıra: önce A (hata), sonra B (özellik önerisi, içinde C örnek teklifi).
 C için ff-tracking reposunun public olması ve bir lisans (MIT) alması gerekir.
 
