@@ -49,12 +49,11 @@ follows the newest characters. A camera that never sits still films the screen u
 ## How it works
 
 ```text
-            hud  (shared crate: shots, tracker, camera, projection)
-           ╱      │                                          ╲
-   flat (pass 1)  tracks ──► out/tracks.json ──► sfx.py       lens (pass 2)
-   SVG, 3840×2160                                │            SkSL on Skia Metal
-        │                                        ▼            + sharp camera overlay
-        └──────► out/pass/flat.mp4 ──────────────┴──► iChannel0 ──► out/tracking.mp4
+hud ──► flat    pass 1: SVG, 3840×2160 ─────────► out/pass/flat.mp4 ──┐ iChannel0
+ │                                                                      ▼
+ ├────► lens    pass 2: SkSL on Skia Metal + camera tracker ──► out/tracking.mp4
+ │                                                                      ▲ audio
+ └────► tracks ──► out/tracks.json ──► sfx.py ──► out/pass/sfx.wav ─────┘
 ```
 
 **Pass 1, `flat`**, draws the screen the way a terminal would: black, white, monospace, one
