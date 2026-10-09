@@ -77,15 +77,21 @@ impl Video for LensVideo {
             .float("uLock", if s.lock { 1.0 } else { 0.0 })
             .float("uCut", s.cut)
             .float("uOut", s.out)
-            .float("uSeed", (si * 31 + f) as f32);
+            .float("uSeed", (si * 31 + f) as f32)
+            .float("uStage", stage());
         let layer = self.shader.draw(&frame, uniforms);
         fframes::svgr!(
             <svg xmlns="http://www.w3.org/2000/svg" width={WIDTH} height={HEIGHT}>
                 <image href={layer.href()} x="0" y="0" width={WIDTH} height={HEIGHT} />
-                {camera_tracker(&s, si, f)}
+                {if stage() >= 4.0 { camera_tracker(&s, si, f) } else { Svgr::empty() }}
             </svg>
         )
     }
+}
+
+/// `LENS_STAGE=0..3` renders the shader up to one step (see lens.sksl); unset = all.
+fn stage() -> f32 {
+    std::env::var("LENS_STAGE").ok().and_then(|v| v.parse().ok()).unwrap_or(4.0)
 }
 
 const MONO: &str = "JetBrains Mono";

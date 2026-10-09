@@ -1,17 +1,20 @@
-# fframes katkı taslakları (2026-10-09)
+# Contributions to fframes (2026-10-09)
 
-Hedef: github.com/dmtrKovalenko/fframes, hesap @mrsarac. Durum: A gönderildi → https://github.com/dmtrKovalenko/fframes/issues/209 (2026-10-09). B gönderildi → https://github.com/dmtrKovalenko/fframes/issues/210. Repo public + MIT.
-Sıra: önce A (hata), sonra B (özellik önerisi, içinde C örnek teklifi).
-C için ff-tracking reposunun public olması ve bir lisans (MIT) alması gerekir.
+Opened from @mrsarac on [dmtrKovalenko/fframes](https://github.com/dmtrKovalenko/fframes):
+
+- **A.** [#209](https://github.com/dmtrKovalenko/fframes/issues/209), bug report.
+- **B.** [#210](https://github.com/dmtrKovalenko/fframes/issues/210), feature idea, with **C**, the offer to contribute this project as an example.
+
+The texts below are the submitted versions (hard-wrapped here, unwrapped on GitHub).
 
 ---
 
-## A. Issue: hata
+## A. Bug report (#209)
 
-**Başlık:**
+**Title:**
 Skia render: an error late in the render surfaces only after unfinished segments drain their x264 lookahead (looks like a hang)
 
-**Gövde:**
+**Body:**
 
 ### What happens
 
@@ -132,12 +135,12 @@ Pro, rustc 1.91.1, Homebrew FFmpeg 9.0.1, libx264.165. On 1.0.0 I saw the same s
 
 ---
 
-## B. Issue: özellik önerisi (içinde C)
+## B. Feature idea (#210)
 
-**Başlık:**
+**Title:**
 Feature idea: feed a shader with an SVG subtree rendered in the same frame (multi-pass in one video)
 
-**Gövde:**
+**Body:**
 
 ### Motivation
 
