@@ -26,3 +26,8 @@ Gerekenler: Rust, ffmpeg, Python 3 + numpy + scipy, macOS (Skia Metal).
 Sahne metni, palet ya da kamera değiştirmek için: `hud/src/lib.rs` → `SCENE_LIST`.
 
 Tasarım: `docs/superpowers/specs/2026-10-09-tracking-hud-design.md`. Promptlar ve kararlar: `docs/PROMPTS.md`.
+
+## Lisans
+
+Kod: MIT (`LICENSE`). Yazı tipi: JetBrains Mono, SIL Open Font License 1.1 (`media/JetBrainsMono-OFL.txt`).
+Sesler `tools/sfx.py` ile sentezlenir; üçüncü taraf ses yoktur.
