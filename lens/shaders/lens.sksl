@@ -1,0 +1,166 @@
+// A camera filming the flat pass on a physical LED screen.
+// Order: tear -> perspective -> depth of field (with chromatic aberration) -> palette ->
+// bloom -> LED grid -> exposure, vignette, grain.
+// Positions named "logical" are in hud's 1920x1080 space; the flat image is 2x that.
+
+uniform shader iChannel0;
+uniform float3 iResolution;
+uniform float iTime;
+
+uniform float2 uAim;
+uniform float uZoom;
+uniform float3 uRot;
+uniform float2 uFocus;
+uniform float uBlur;
+uniform float3 uP0;
+uniform float3 uP1;
+uniform float3 uP2;
+uniform float3 uP3;
+uniform float3 uP4;
+uniform float uLock;
+uniform float uCut;
+uniform float uOut;
+uniform float uSeed;
+
+const float FLAT_SCALE = 2.0;
+const float LW = 1920.0;
+const float LH = 1080.0;
+const float FOCAL = 1.7;
+const float CELL = 3.0;
+const int TAPS = 36;
+const int GLOW_TAPS = 16;
+
+float hash(float2 p) {
+    return fract(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453);
+}
+
+float3 pal(float x) {
+    float t = clamp(x, 0.0, 1.0) * 4.0;
+    if (t < 1.0) { return mix(uP0, uP1, t); }
+    if (t < 2.0) { return mix(uP1, uP2, t - 1.0); }
+    if (t < 3.0) { return mix(uP2, uP3, t - 2.0); }
+    return mix(uP3, uP4, t - 3.0);
+}
+
+// Flat pass at a logical position; black outside the screen.
+float3 screenAt(float2 q) {
+    float inside = step(0.0, q.x) * step(0.0, q.y) * step(q.x, LW) * step(q.y, LH);
+    return iChannel0.eval(q * FLAT_SCALE).rgb * inside;
+}
+
+float3x3 rotation() {
+    float cx = cos(uRot.x); float sx = sin(uRot.x);
+    float cy = cos(uRot.y); float sy = sin(uRot.y);
+    float cz = cos(uRot.z); float sz = sin(uRot.z);
+    float3x3 rx = float3x3(1.0, 0.0, 0.0,  0.0, cx, sx,  0.0, -sx, cx);
+    float3x3 ry = float3x3(cy, 0.0, -sy,  0.0, 1.0, 0.0,  sy, 0.0, cy);
+    float3x3 rz = float3x3(cz, sz, 0.0,  -sz, cz, 0.0,  0.0, 0.0, 1.0);
+    return rz * ry * rx;
+}
+
+half4 main(float2 coord) {
+    float2 res = iResolution.xy;
+    float2 frameSeed = float2(uSeed, floor(iTime * 30.0));
+
+    // Tear: on a lock and right after a cut, a few rows slide sideways.
+    float2 px = coord;
+    float shake = uLock + uCut;
+    if (shake > 0.0) {
+        float band = floor(coord.y / 16.0);
+        float n = hash(float2(band, frameSeed.x * 3.7 + frameSeed.y));
+        float hit = step(0.93 - 0.18 * shake, n);
+        px.x += hit * (hash(float2(band, frameSeed.y + 9.0)) - 0.5) * 220.0 * shake;
+    }
+
+    // Perspective: a ray per pixel hits the tilted screen plane.
+    float2 s = (px - 0.5 * res) / res.y;
+    float3 d = float3(s.x, s.y, FOCAL);
+    float3x3 R = rotation();
+    float3 eu = R * float3(1.0, 0.0, 0.0);
+    float3 ev = R * float3(0.0, 1.0, 0.0);
+    float3 n = R * float3(0.0, 0.0, 1.0);
+    float3 p0 = float3(0.0, 0.0, 1.0);
+    float dn = dot(d, n);
+    if (dn <= 0.0001) { return half4(half3(pal(0.0) * (1.0 - uOut)), 1.0); }
+    float3 hit3 = d * (dot(p0, n) / dn);
+    float2 local = float2(dot(hit3 - p0, eu), dot(hit3 - p0, ev));
+    float K = FOCAL * LH / uZoom;
+    float2 base = uAim + local * K;
+    float z = hit3.z;
+
+    // Depth of field: circle of confusion from the depth difference to the tracked target.
+    float2 fl = (uFocus - uAim) / K;
+    float zf = (p0 + eu * fl.x + ev * fl.y).z;
+    float coc = clamp(uBlur * 190.0 * abs(1.0 - zf / z), 0.0, 46.0);
+    float logPerPx = LH / (uZoom * res.y) * z;
+    float rLog = coc * logPerPx;
+
+    // Chromatic aberration grows toward the edges and on a lock.
+    float2 ca = s * (0.006 + 0.016 * uLock + 0.008 * uCut) * (LH / uZoom);
+
+    float spin = hash(coord * 0.37 + frameSeed) * 6.2831;
+    float3 accG = float3(0.0);
+    float accR = 0.0;
+    float accB = 0.0;
+    float wsum = 0.0;
+    for (int i = 0; i < TAPS; i++) {
+        float fi = float(i);
+        float a = fi * 2.39996323 + spin;
+        float r = sqrt((fi + 0.5) / float(TAPS)) * rLog;
+        float2 q = base + float2(cos(a), sin(a)) * r;
+        // LED pixels: every tap reads the center of its cell.
+        float2 qs = (floor(q / CELL) + 0.5) * CELL;
+        float3 g = screenAt(qs);
+        float w = 1.0 + 7.0 * g.g * g.g * g.g;
+        accG += g * w;
+        accR += screenAt(qs + ca).g * w;
+        accB += screenAt(qs - ca).g * w;
+        wsum += w;
+    }
+    accG /= wsum;
+    accR /= wsum;
+    accB /= wsum;
+
+    // Red marks a locked box in the flat pass; it stays red in every palette.
+    float red = clamp((accG.r - accG.g) * 1.4, 0.0, 1.0);
+    float3 col = float3(pal(accR).r, pal(accG.g).g, pal(accB).b);
+    col = mix(col, float3(1.0, 0.13, 0.10), red);
+
+    // Bloom: a wide ring of taps lifts everything around bright glyphs.
+    float glowR = 26.0 * logPerPx + rLog * 0.6;
+    float glow = 0.0;
+    float glowRed = 0.0;
+    for (int j = 0; j < GLOW_TAPS; j++) {
+        float fj = float(j);
+        float a = fj * 2.39996323 + spin * 0.5;
+        float r = sqrt((fj + 0.5) / float(GLOW_TAPS)) * glowR;
+        float3 g = screenAt(base + float2(cos(a), sin(a)) * r);
+        glow += g.g;
+        glowRed += clamp(g.r - g.g, 0.0, 1.0);
+    }
+    glow /= float(GLOW_TAPS);
+    glowRed /= float(GLOW_TAPS);
+    col += pal(min(1.0, glow * 1.6)) * glow * 0.75;
+    col += float3(1.0, 0.1, 0.05) * glowRed * 0.9;
+
+    // LED grid on the screen surface; it fades out of focus and where cells get too small.
+    // Equal-area RGB stripes per cell (no tint on average) inside rounded LED rows.
+    float2 cu = fract(base / CELL) - 0.5;
+    float u = cu.x + 0.5;
+    float3 sub = 0.5 + 0.5 * cos(6.2831853 * (float3(u) - float3(0.1667, 0.5, 0.8333)));
+    float rowm = 1.0 - smoothstep(0.28, 0.5, abs(cu.y));
+    float colm = 1.0 - smoothstep(0.36, 0.5, abs(cu.x));
+    float3 led = rowm * colm * (0.4 + 1.0 * sub);
+    float cellPx = CELL / logPerPx;
+    float ledAmt = (1.0 - smoothstep(0.8, 3.5, rLog / CELL)) * smoothstep(2.2, 4.5, cellPx);
+    col *= mix(float3(1.0), led * 1.3, ledAmt * 0.9);
+
+    // Exposure kick on a cut, vignette, rolling flicker, grain, final fade.
+    col = col * (1.0 + uCut * 1.1) + uCut * 0.06;
+    float2 v = s * float2(0.85, 1.15);
+    col *= 1.0 - 0.42 * dot(v, v);
+    col *= 0.965 + 0.035 * sin(coord.y * 0.9 - iTime * 55.0);
+    col += (hash(coord + frameSeed * 1.31) - 0.5) * 0.06;
+    col *= 1.0 - uOut;
+    return half4(half3(clamp(col, 0.0, 1.0)), 1.0);
+}

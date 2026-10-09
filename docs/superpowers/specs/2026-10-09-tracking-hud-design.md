@@ -119,3 +119,22 @@ Her sahne için: `text`, `palette` (ad), `camera` (eğim açıları, yakınlık,
 - Gerçek kamera görüntüsü üzerinde hareket takibi.
 - 6 sn'den uzun sürüm, müzik, seslendirme.
 - X'te yayınlama.
+
+## Uygulamada değişenler (2026-10-09)
+
+- **`scenes.json` yerine `hud` crate'i.** Sahne verisi, takip kutuları ve kamera ortak bir Rust
+  crate'inde (`hud/src/lib.rs`). İki geçiş aynı fonksiyonları çağırır; `tracks.json` yalnızca ses
+  script'i için `hud`'dan üretilir (`target/release/tracks`).
+- **İki katmanlı takip.** Kutular ve tarama deseni ekranda kalır (LED ızgarası ve bulanıklık alır).
+  Etiketler, bağlantı çizgileri ve hedef köşelikleri kameranın net katmanıdır; `lens` bunları
+  `hud::project` ile çizer. Etiketteki x/y, kutunun çıktı görüntüsündeki gerçek pikselidir.
+  Sebep: LED ızgarasında küçük etiketler okunamıyordu.
+- **Teknik test başarılı.** `get_synced_video_frame(..).into_image()` shader'a `iChannel0` olarak
+  veriliyor; ffmpeg yedeğine gerek kalmadı.
+- **Render ayarı.** `lens` tek GPU hattıyla (`OnePipeline`) çalışır. `flat` sonuna 10 yedek kare
+  eklenir, çünkü çözücü son kareleri vermiyor; kare gelmezse `lens` siyah kare çizer.
+- **Ses.** Gerçekleşen değer: -14,0 LUFS, gerçek tepe -0,9 dBTP (fframes limiter -1 dBFS).
+
+## Çalıştırma
+
+`tools/render.sh` → `out/tracking.mp4` (yaklaşık 40 sn).

@@ -1,0 +1,20 @@
+[package]
+name = "flat"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+hud = { path = "../hud" }
+fframes = { workspace = true }
+fframes_skia_renderer = { workspace = true }
+fframes_native_player = { workspace = true }
+
+[lib]
+name = "flat"
+path = "src/lib.rs"
+doctest = false
+
+[[bin]]
+name = "flat"
+path = "src/main.rs"
