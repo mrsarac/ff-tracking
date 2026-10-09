@@ -6,3 +6,4 @@ frames/
 strip.png
 check.png
 __pycache__/
+.DS_Store

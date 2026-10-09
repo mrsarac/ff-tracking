@@ -1,0 +1,28 @@
+# ff-tracking
+
+6 saniyelik tracking-HUD stil denemesi, [fframes](https://github.com/dmtrKovalenko/fframes) ile.
+Bir ajan terminalde düşünür; ekrandaki takip kutuları yazılan harfleri izler, bir sanal kamera
+ekranı eğik açıdan, odak bulanıklığı, LED ızgarası ve sahne başına paletle çeker.
+
+Stil ilhamı: [Michael Nowak (@mnowakdesign)](https://x.com/mnowakdesign/status/2108253918086176899).
+
+## Çalıştırma
+
+```bash
+tools/render.sh        # -> out/tracking.mp4 (yaklaşık 40 sn)
+```
+
+Gerekenler: Rust, ffmpeg, Python 3 + numpy + scipy, macOS (Skia Metal).
+
+## Yapı
+
+| Klasör | Ne yapar |
+|---|---|
+| `hud/` | Sahneler, takip kutuları, kamera, projeksiyon; iki geçişin ortak kaynağı |
+| `flat/` | Geçiş 1: düz ekran + kutular, 3840×2160 → `out/pass/flat.mp4` |
+| `lens/` | Geçiş 2: `shaders/lens.sksl` ile kamera + net takip katmanı → `out/tracking.mp4` |
+| `tools/sfx.py` | Bütün sesleri sentezler → `out/pass/sfx.wav` |
+
+Sahne metni, palet ya da kamera değiştirmek için: `hud/src/lib.rs` → `SCENE_LIST`.
+
+Tasarım: `docs/superpowers/specs/2026-10-09-tracking-hud-design.md`. Promptlar ve kararlar: `docs/PROMPTS.md`.
