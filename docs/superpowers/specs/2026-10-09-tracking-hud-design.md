@@ -138,3 +138,12 @@ Her sahne için: `text`, `palette` (ad), `camera` (eğim açıları, yakınlık,
 ## Çalıştırma
 
 `tools/render.sh` → `out/tracking.mp4` (yaklaşık 40 sn).
+
+## fframes 1.2.0'a geçiş (2026-10-09)
+
+- 1.2.0 son video karelerini veriyor (#167, #172): `flat` sonundaki 10 yedek kare kaldırıldı.
+- `MaxPerformance` 1.2.0'da kilitlenmiyor: tekrar açıldı (lens render 33 sn → 28-30 sn).
+- Eski kilitlenmenin asıl sebebi: kökünde `<svg>` olmayan bir kare (`Svgr::empty()`) tam
+  render'ı hata vermeden kilitliyor. Aralık render'ı (`render 160..180`) doğru hata veriyor.
+  1.2.0'da iki modda da tekrarlandı; siyah kare yedeği bu yüzden kalıyor.
+- 1.0 ile 1.2 çıktısı gözle aynı (SSIM 0,95, fark kumlanma ve kodlama gürültüsü).

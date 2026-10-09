@@ -36,7 +36,7 @@ fn main() -> ExitCode {
         SkiaFFramesRenderer::new_metal(
             &gpu,
             SkiaPipelineConfig {
-                concurrency_policy: SkiaPipelineConcurrencyPolicy::OnePipeline,
+                concurrency_policy: SkiaPipelineConcurrencyPolicy::MaxPerformance,
                 ..Default::default()
             },
         )

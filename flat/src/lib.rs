@@ -11,8 +11,6 @@ include_media_dir!(pub struct FlatMedia, "media");
 pub const WIDTH: usize = 3840;
 pub const HEIGHT: usize = 2160;
 const SCALE: f32 = 2.0;
-/// Extra frames at the end: the decoder in the lens pass does not hand out the last few.
-const PAD_FRAMES: usize = 10;
 
 const MONO: &str = "JetBrains Mono";
 const WHITE: &str = "#ffffff";
@@ -36,7 +34,7 @@ impl Video for FlatVideo {
     const BACKGROUND_COLOR: Color = Color::BLACK;
 
     fn duration(&self) -> Duration<'_> {
-        Duration::Frames(hud::TOTAL_FRAMES + PAD_FRAMES)
+        Duration::Frames(hud::TOTAL_FRAMES)
     }
 
     fn audio(&self) -> AudioMap<'_> {

@@ -51,6 +51,8 @@ impl Video for LensVideo {
             looping: false,
             editor_fallback_image: None,
         };
+        // A root without <svg> makes a full render hang instead of failing (fframes 1.2.0),
+        // so a missing frame draws black.
         let Some(flat) = frame.get_synced_video_frame(ctx, "flat.mp4", &input) else {
             return fframes::svgr!(
                 <svg xmlns="http://www.w3.org/2000/svg" width={WIDTH} height={HEIGHT}>

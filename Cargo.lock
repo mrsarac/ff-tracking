@@ -285,6 +285,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
+name = "base64"
+version = "0.23.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
+
+[[package]]
 name = "bindgen"
 version = "0.72.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -934,10 +940,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "ffmpeg-sys-next"
+name = "ffmpeg-sys-fframes"
 version = "9.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b939bf79dd5949412a4b81cfe21a07f48ea21b47fcbb5f57816c8c2de5ae30b"
+checksum = "cfc8123240ea935f4d766323979843650afd6d00b475c561d3bb8a59a2e6e31f"
 dependencies = [
  "bindgen",
  "cc",
@@ -949,9 +955,9 @@ dependencies = [
 
 [[package]]
 name = "fframes"
-version = "1.0.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "080a2b7e85020898097bcc67758166417c7232150b9361099f39855afe86c181"
+checksum = "004b1d0fec651ea8c5f62aa5be88696ffeeb6dcf37b194ce5c13b68b188f1016"
 dependencies = [
  "clap",
  "colored",
@@ -985,13 +991,13 @@ dependencies = [
 
 [[package]]
 name = "fframes-media"
-version = "1.0.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae147f65623f3ec0464d0359ce2b501247eb93b58e9d3f2b81552805a6f28140"
+checksum = "44b7ac1e484226f05bfac8ee35de8949dd3c51425fec1cb84d5e17313a0c3177"
 dependencies = [
  "base64 0.22.1",
  "bytemuck",
- "ffmpeg-sys-next",
+ "ffmpeg-sys-fframes",
  "image",
  "itoa",
  "libc",
@@ -1003,9 +1009,9 @@ dependencies = [
 
 [[package]]
 name = "fframes-media-dir-macro"
-version = "1.0.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c631b2bf7b2145813266ebec84541096b9c68b717d5cb1f91acfb40f38f5920"
+checksum = "db0011bdfc7620d44fd128ea3f49b1d63767bac78f40d8b8db592e4119d9e166"
 dependencies = [
  "base64 0.22.1",
  "bytemuck",
@@ -1017,40 +1023,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "fframes-skia-bindings"
-version = "0.91.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05df6915f25d413d30e5003b7f98c12d79b3490c70affcce3b30caaf4384b750"
-dependencies = [
- "bindgen",
- "cc",
- "flate2",
- "heck",
- "pkg-config",
- "regex",
- "serde_json",
- "tar",
- "toml",
-]
-
-[[package]]
-name = "fframes-skia-safe"
-version = "0.91.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aef6f090c160ed785fa8a5239f6b761785db70c0cb49a448e427f493211c4cc0"
-dependencies = [
- "base64 0.22.1",
- "bitflags 2.13.2",
- "fframes-skia-bindings",
- "percent-encoding",
- "skia-svg-macros",
-]
-
-[[package]]
 name = "fframes_native_player"
-version = "1.0.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85e1d0bcfe35a48bf538017ff807d56a0b25f06c1b71715de54f04dac6454581"
+checksum = "78a4c2b6bd3103718c0fd65016300eb064e23c4a58e4839d648bfb2a6b259370"
 dependencies = [
  "cpal",
  "fframes",
@@ -1061,14 +1037,15 @@ dependencies = [
 
 [[package]]
 name = "fframes_skia_renderer"
-version = "1.0.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dfdf8b39c5abf02531444d28fbd49c7dbac3f43dbd4e178e35aee2c25a2c225"
+checksum = "28303fd0cfdbb9d937a07cd3091c859a5777cba4b6622ba37e8a4047cb01675e"
 dependencies = [
+ "core-foundation 0.10.1",
  "fframes",
- "fframes-skia-safe",
  "foreign-types-shared",
  "metal",
+ "skia-safe",
  "thingbuf",
  "uuid",
 ]
@@ -3035,9 +3012,9 @@ dependencies = [
 
 [[package]]
 name = "serde_spanned"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6662b5879511e06e8999a8a235d848113e942c9124f211511b16466ee2995f26"
+checksum = "4e7523beb55eece201a2356bee0bbca0d1ab466c14c07703b2e0ee6d42cb0c2c"
 dependencies = [
  "serde_core",
 ]
@@ -3107,14 +3084,44 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33f4fe9184a62d842c9ef383018f3306d8ba224fd9d836f56d7288308847c256"
 
 [[package]]
-name = "skia-svg-macros"
-version = "0.1.0"
+name = "skia-bindings"
+version = "0.153.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "044dd2233c9717a74f75197f3e7f0a966db2127c0ffb5e05013b480a9b75b2c7"
+checksum = "eb325787c91b3f6c34a7c6f2b8a2297b20292d733ca53a08c233e5028aec49af"
+dependencies = [
+ "bindgen",
+ "cc",
+ "flate2",
+ "heck",
+ "pkg-config",
+ "regex",
+ "serde_json",
+ "tar",
+ "toml",
+]
+
+[[package]]
+name = "skia-safe"
+version = "0.153.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c61cb643dac43067f3eb76c866635a74377ac0abca0ff2590674e1e295514c3d"
+dependencies = [
+ "base64 0.23.1",
+ "bitflags 2.13.2",
+ "percent-encoding",
+ "skia-bindings",
+ "skia-svg-macros",
+]
+
+[[package]]
+name = "skia-svg-macros"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fec38aa7a389d249e1ce357b050ae5bdb302fd9943661fa650f39cf6ea51be97"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.119",
+ "syn 3.0.6",
 ]
 
 [[package]]
@@ -3233,9 +3240,9 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
 name = "svgr"
-version = "0.46.0"
+version = "0.46.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fac2e661050721c00a3ea807bf2855a54f27ad726166b1ce881280b9bb6a2182"
+checksum = "b7693be4358db6d2b20e039a8b9ff93b3736e481ad36ab435ccdb489da104214"
 dependencies = [
  "gif 0.12.0",
  "jpeg-decoder",
@@ -3250,9 +3257,9 @@ dependencies = [
 
 [[package]]
 name = "svgr-macro"
-version = "1.0.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fa0b2c1e9e03b0ed6ed835d93e6f5e2e08a08d81bb86deab7eb52900d0dd4c6"
+checksum = "5ad73ddb90343b270413fcf4e84e2860f836b87ed1f2bfb1627fd149f8a80e5f"
 dependencies = [
  "lazy_static",
  "proc-macro-crate",
@@ -3441,33 +3448,24 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.9.12+spec-1.1.0"
+version = "1.1.8+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf92845e79fc2e2def6a5d828f0801e29a2f8acc037becc5ab08595c7d5e9863"
+checksum = "20489e00e4d8741d6be680764cc12e270655e375a20d1011e844a9c3379e678d"
 dependencies = [
  "indexmap",
  "serde_core",
  "serde_spanned",
- "toml_datetime 0.7.5+spec-1.1.0",
+ "toml_datetime",
  "toml_parser",
  "toml_writer",
- "winnow 0.7.15",
+ "winnow",
 ]
 
 [[package]]
 name = "toml_datetime"
-version = "0.7.5+spec-1.1.0"
+version = "1.1.2+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92e1cfed4a3038bc5a127e35a2d360f145e1f4b971b551a2ba5fd7aedf7e1347"
-dependencies = [
- "serde_core",
-]
-
-[[package]]
-name = "toml_datetime"
-version = "1.1.1+spec-1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3165f65f62e28e0115a00b2ebdd37eb6f3b641855f9d636d3cd4103767159ad7"
+checksum = "2b86d767906c6c42421dcba507eb9d203e779497710a47782a224bb871653053"
 dependencies = [
  "serde_core",
 ]
@@ -3479,25 +3477,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1340ea94a5856333492c9064b02c778b191dd2c853778d9609debdcdfea3a614"
 dependencies = [
  "indexmap",
- "toml_datetime 1.1.1+spec-1.1.0",
+ "toml_datetime",
  "toml_parser",
- "winnow 1.0.4",
+ "winnow",
 ]
 
 [[package]]
 name = "toml_parser"
-version = "1.1.3+spec-1.1.0"
+version = "1.1.5+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d38ac1cf9b95face32296c0a3ede1fdc270627c9d9c02a7274dd6d960dc4d56"
+checksum = "baa693a8032d7e1cada7d0041e96126df243179ff061456783ac7f12bda4744c"
 dependencies = [
- "winnow 1.0.4",
+ "winnow",
 ]
 
 [[package]]
 name = "toml_writer"
-version = "1.1.2+spec-1.1.0"
+version = "1.1.3+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d56353a2a665ad0f41a421187180aab746c8c325620617ad883a99a1cbe66d2"
+checksum = "06bdbd8cfc056b8d2e2e85f29b56a3bdbecb527cef81eb39e3e7b98af4652770"
 
 [[package]]
 name = "tracing"
@@ -3604,9 +3602,9 @@ checksum = "81e544489bf3d8ef66c953931f56617f423cd4b5494be343d9b9d3dda037b9a3"
 
 [[package]]
 name = "usvgr"
-version = "0.46.0"
+version = "0.46.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0161ea03cdcccf46f6581868223f38f7e619e4eb9f40457c2cb7c9a1be709654"
+checksum = "cd6aeccea458c5a0ca94be0f1a5eabf44d4b754316101569f3cae399c53debb5"
 dependencies = [
  "ahash",
  "base64 0.21.7",
@@ -4176,12 +4174,6 @@ dependencies = [
  "x11rb",
  "xkbcommon-dl",
 ]
-
-[[package]]
-name = "winnow"
-version = "0.7.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945"
 
 [[package]]
 name = "winnow"
