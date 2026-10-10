@@ -145,6 +145,14 @@ it with the fade to black. It comes out around -10.7 LUFS with a -1 dBTP true pe
 Change a shot and run `SLAB=… tools/score.sh`: the hits, pans and filter moves follow the
 new timing and camera.
 
+The Slab score is by [nooga (@MGasperowicz)](https://x.com/MGasperowicz/status/2108692059431342428),
+the author of Slab, contributed in [#1](https://github.com/mrsarac/ff-tracking/pull/1); how it was made
+is in [#2](https://github.com/mrsarac/ff-tracking/issues/2).
+
+**License note:** `score/score.py` imports `slabkit`, which ships with Slab under GPL-3.0. slabkit is not
+part of this repo and Slab is needed only to re-render the score. Its author offers `score/score.py`,
+the project in `score/ff_tracking.slab/` and `score/score.wav` under this repo's MIT license.
+
 ## Make it yours
 
 Every shot is one entry in `SCENE_LIST` in [`hud/src/lib.rs`](hud/src/lib.rs):
@@ -194,6 +202,7 @@ docs/          design spec, prompts and decisions, fframes contributions
 
 - Visual style inspired by [Michael Nowak (@mnowakdesign)](https://x.com/mnowakdesign/status/2108253918086176899).
   None of his footage is used.
+- Slab score (optional soundtrack): [nooga](https://github.com/nooga), made in [Slab](https://github.com/nooga/slab).
 - Built on [fframes](https://github.com/dmtrKovalenko/fframes) by Dmitriy Kovalenko, rendering with
   [Skia](https://skia.org), encoding with [FFmpeg](https://ffmpeg.org).
 - Font: [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) (SIL OFL 1.1, see
