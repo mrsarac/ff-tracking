@@ -88,6 +88,13 @@ screen hum, a bit-crushed glitch on each cut, a click per keystroke and a pentat
 per lock, panned to the box. It adds a riser into the collapse and a chime with a sub hit on
 `Done`. Loudness is measured with ffmpeg's `ebur128` and set to -14 LUFS.
 
+**Score** (optional): [`score/score.py`](score/score.py) is a second soundtrack, made in
+[Slab](https://github.com/nooga/slab): a darker, heavier piece at 120 BPM, so every cut lands
+on a beat. It reads the same `out/tracks.json`, plus `out/camera.json` from the `camera`
+binary, so the mix follows the lens. The tracked box pans the lock blips and keystrokes, the
+screen's slide pans the pad, riser and glitches, each zoom push opens the bass filter, and the
+red lock frames tear the bass. See [Slab score](#slab-score).
+
 ## Quick start
 
 Requirements: macOS with Apple silicon (Skia on Metal), Rust, ffmpeg, Python 3 with `numpy`
@@ -111,6 +118,32 @@ target/release/lens audio analyze          # loudness, true peak
 LENS_STAGE=1 target/release/lens frame 81  # stop the shader after a step (0-3), as in the image above
 python3 -I tools/readme_media.py           # rebuild the images in this README
 ```
+
+## Slab score
+
+`tools/score.sh` is `render.sh` with the Slab score in place of `sfx.py`:
+
+```bash
+tools/score.sh                          # uses the committed render, score/score.wav
+SLAB=/path/to/slab tools/score.sh       # renders the score again from score/score.py
+```
+
+Rendering needs a [Slab](https://github.com/nooga/slab) checkout built with
+`zig build -Doptimize=ReleaseFast`. `score/score.py` writes the project
+`score/ff_tracking.slab`, which opens in Slab's arrangement and mixer, and renders it headless.
+The render runs past the picture for the reverb tail, so `score.sh` cuts it at 6 s and fades
+it with the fade to black. It comes out around -10.7 LUFS with a -1 dBTP true peak.
+
+| File | What it is |
+|---|---|
+| `hud/src/bin/camera.rs` | writes `out/camera.json`: per frame, the zoom, tilt and roll, the tracked box's position in the output and where the filmed screen's centre lands |
+| `score/score.py` | the score: reads both JSON files, writes the Slab project, renders it |
+| `score/ff_tracking.slab/` | the generated Slab project (tracks, notes, automation, effects) |
+| `score/score.wav` | the score rendered and cut to 6 s, 48 kHz, so the video builds without Slab |
+| `tools/score.sh` | the whole pipeline with the score |
+
+Change a shot and run `SLAB=… tools/score.sh`: the hits, pans and filter moves follow the
+new timing and camera.
 
 ## Make it yours
 
@@ -138,7 +171,9 @@ that the camera keeps every target in frame.
 hud/           shots, tracker boxes, camera per frame, projection (no fframes dependency)
 flat/          pass 1: the screen, 3840×2160
 lens/          pass 2: lens/shaders/lens.sksl and the camera-space tracker
-tools/         render.sh (whole pipeline), sfx.py (sound), readme_media.py (these images)
+tools/         render.sh (whole pipeline), sfx.py (sound), readme_media.py (these images),
+               score.sh (the pipeline with the Slab score)
+score/         the Slab score: score.py, the ff_tracking.slab project, score.wav
 docs/          design spec, prompts and decisions, fframes contributions
 ```
 
