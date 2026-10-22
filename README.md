@@ -99,11 +99,40 @@ red lock frames tear the bass. See [Slab score](#slab-score).
 
 ## Quick start
 
-macOS uses Metal; Windows uses Vulkan. For Windows requirements and the PowerShell
-render pipeline, see [Windows setup](docs/WINDOWS.md). The macOS instructions follow.
+macOS uses Metal; Linux and Windows use Vulkan. For Windows requirements and the
+PowerShell render pipeline, see [Windows setup](docs/WINDOWS.md).
 
-Requirements: macOS with Apple silicon (Skia on Metal), Rust, ffmpeg, Python 3 with `numpy`
-and `scipy`. The README images also need Pillow and `img2webp`.
+### Requirements
+
+- Rust (2024 edition), ffmpeg and ffprobe on `PATH`.
+- Python 3 with `numpy` and `scipy`, or [uv](https://docs.astral.sh/uv/)
+  (`render.sh` uses `uv run --with numpy --with scipy` if the packages are missing).
+- macOS: Apple silicon, Skia on Metal (the existing path).
+- Linux: a Vulkan loader and GPU driver, plus a C/C++ toolchain, pkg-config,
+  libclang, fontconfig and OpenGL development libraries for Skia. On Debian/Ubuntu:
+  `sudo apt install build-essential pkg-config libclang-dev libfontconfig1-dev libgl1-mesa-dev libvulkan1 ffmpeg`.
+  For NVIDIA, install your distribution's proprietary Vulkan-capable driver.
+  Rust Skia normally downloads a prebuilt; a source build also needs Python and Ninja.
+- README images additionally need Pillow and `img2webp`.
+
+Linux uses Vulkan, not Metal. The default `FF_BACKEND=auto` tries the platform GPU
+and reports a CPU fallback if context creation fails. To choose explicitly:
+
+```bash
+FF_BACKEND=gpu tools/render.sh  # Vulkan on Linux/Windows, Metal on macOS; no silent fallback
+FF_BACKEND=cpu tools/render.sh  # no GPU context is created (also works with GPUs hidden)
+```
+
+The CPU flat pass uses fframes' tiny-skia SVG renderer. The CPU lens pass uses
+fframes' `SkiaCpuCtx` raster compatibility backend, **not** tiny-skia, because
+tiny-skia cannot run SkSL. The original lens shader still runs: perspective,
+depth of field, palette, aberration, bloom, LED grid, tear and grain are retained.
+This is slower, and SVG antialiasing/filter kernels can differ from the GPU pass.
+Backend selection is printed to stderr; invalid values fail rather than choosing
+a different backend. `FF_BACKEND` also works when invoking either binary directly.
+`preview` still needs a GPU/window; the fallback is for offline rendering.
+
+### Render
 
 ```bash
 git clone https://github.com/mrsarac/ff-tracking && cd ff-tracking

@@ -1,20 +1,14 @@
-use fframes::{EncoderOptions, RenderOptions, StaticMediaProvider, cli};
-#[cfg(not(windows))]
-use fframes_skia_renderer::metal::SkiaMetalCtx as SkiaGpuCtx;
-#[cfg(windows)]
-use fframes_skia_renderer::vulkan::SkiaVulkanCtx as SkiaGpuCtx;
-use fframes_skia_renderer::{
-    SkiaFFramesRenderer, SkiaPipelineConcurrencyPolicy, SkiaPipelineConfig,
-};
-use flat::{FlatMedia, FlatVideo, HEIGHT, WIDTH};
+use fframes::{EncoderOptions, RenderOptions, StaticMediaProvider};
+#[path = "../../tools/backend.rs"]
+mod backend;
+use flat::{FlatMedia, FlatVideo};
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let media = FlatMedia::prepare().expect("media");
     let video = FlatVideo::new();
-    let gpu = SkiaGpuCtx::new(WIDTH, HEIGHT).expect("GPU context");
 
-    cli::new(
+    backend::run(
         &video,
         RenderOptions {
             media: Some(&media),
@@ -27,25 +21,7 @@ fn main() -> ExitCode {
             },
             ..Default::default()
         },
+        "out/pass/flat.mp4",
+        false,
     )
-    .backend(SkiaFFramesRenderer::new(
-        if cfg!(windows) {
-            // Bound GPU contexts and frame buffers to limit memory use on Windows.
-            SkiaPipelineConfig {
-                concurrency_policy: SkiaPipelineConcurrencyPolicy::Concurrency(2),
-                encoder_threads: 2,
-                buffer_queue_size: 2,
-                ..Default::default()
-            }
-        } else {
-            SkiaPipelineConfig {
-                concurrency_policy: SkiaPipelineConcurrencyPolicy::MaxPerformance,
-                ..Default::default()
-            }
-        },
-        &gpu,
-    ))
-    .preview(fframes_native_player::cli_preview)
-    .default_output("out/pass/flat.mp4")
-    .run()
 }
